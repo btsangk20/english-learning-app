@@ -26,6 +26,23 @@ const vocabData: VocabWord[] = [
     meaning: 'có thể, có khả năng',
     examples: ["I'm able to swim.", 'He is able to do it.'],
   },
+  {
+    word: 'about',
+    type: 'prep',
+    pronunciation: '/əˈbaʊt/',
+    meaning: 'về, khoảng, gần',
+    examples: ["I'm about to leave.", 'They are about to finish.'],
+  },
+  {
+    word: 'above',
+    type: 'prep',
+    pronunciation: '/əˈbʌv/',
+    meaning: 'trên, phía trên',
+    examples: [
+      'The sun is above the horizon.',
+      'She is above average in her class.',
+    ],
+  },
 ];
 
 export default vocabData;

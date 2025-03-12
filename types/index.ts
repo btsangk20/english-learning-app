@@ -22,3 +22,9 @@ export interface QuizResult {
   wrongAnswers: VocabWord[];
   timeSpent: number;
 }
+
+export interface QuizScore {
+  date: string;
+  score: number;
+  total: number;
+}
