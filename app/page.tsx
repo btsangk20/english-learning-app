@@ -1,3 +1,5 @@
+'use client';
+
 // app/page.tsx
 import Link from 'next/link';
 import {
@@ -11,7 +13,6 @@ import {
   FaGraduationCap,
   FaChartLine,
 } from 'react-icons/fa';
-
 export default function Home() {
   const features = [
     {

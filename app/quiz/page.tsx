@@ -1,12 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// app/quiz/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import QuizQuestion from '../../components/QuizQuestion';
 import QuizResult from '../../components/QuizResult';
 import vocabData from '../../data/vocabData';
 import { generateQuizQuestions } from '../../lib/utils';
+import { Select } from '@mantine/core';
 import {
   QuizQuestion as QuizQuestionType,
   VocabWord,
@@ -21,18 +20,17 @@ export default function QuizPage() {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [startTime, setStartTime] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [questionCount, setQuestionCount] = useState(5);
-
-  useEffect(() => {
-    startQuiz();
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [questionCount, setQuestionCount] = useState<string>('5');
+  const [quizStarted, setQuizStarted] = useState(false);
+  // Thêm key để force re-render QuizQuestion component
+  const [questionKey, setQuestionKey] = useState(0);
 
   const startQuiz = () => {
     try {
       setIsLoading(true);
       // Giới hạn số câu hỏi dựa trên số từ vựng có sẵn
-      const maxQuestions = Math.min(questionCount, vocabData.length);
+      const maxQuestions = Math.min(Number(questionCount), vocabData.length);
       const newQuestions = generateQuizQuestions(vocabData, maxQuestions);
 
       setQuestions(newQuestions);
@@ -42,12 +40,25 @@ export default function QuizPage() {
       setQuizCompleted(false);
       setStartTime(Date.now());
       setQuizResult(null);
+      setQuizStarted(true);
+      setQuestionKey(0); // Reset question key
       setIsLoading(false);
     } catch (error) {
       console.error('Error starting quiz:', error);
       alert('Có lỗi khi tạo quiz. Vui lòng thử lại sau.');
       setIsLoading(false);
     }
+  };
+
+  const resetQuiz = () => {
+    setQuestions([]);
+    setCurrentQuestionIndex(0);
+    setWrongAnswers([]);
+    setCorrectCount(0);
+    setQuizCompleted(false);
+    setQuizResult(null);
+    setQuizStarted(false);
+    setQuestionKey(0); // Reset question key
   };
 
   const handleAnswer = (isCorrect: boolean) => {
@@ -64,6 +75,8 @@ export default function QuizPage() {
     if (currentQuestionIndex < questions.length - 1) {
       setTimeout(() => {
         setCurrentQuestionIndex((prev) => prev + 1);
+        // Tăng key để force QuizQuestion component re-render
+        setQuestionKey((prev) => prev + 1);
       }, 500);
     } else {
       // Kết thúc quiz
@@ -103,45 +116,64 @@ export default function QuizPage() {
           </p>
         </div>
 
-        {!quizCompleted
-          ? questions.length > 0 && (
-              <QuizQuestion
-                question={questions[currentQuestionIndex]}
-                onAnswer={handleAnswer}
-                questionNumber={currentQuestionIndex + 1}
-                totalQuestions={questions.length}
-              />
-            )
-          : quizResult && (
-              <QuizResult result={quizResult} onRetry={startQuiz} />
-            )}
-
-        {!quizCompleted && (
-          <div className='mt-8 text-center'>
-            <div className='flex items-center justify-center gap-2 mb-4'>
-              <span className='text-gray-600'>Số câu hỏi:</span>
-              <select
-                className='px-3 py-1 border rounded-md'
+        {!quizStarted ? (
+          <div className='bg-white rounded-lg shadow-md p-6 mb-8'>
+            <h2 className='text-xl font-semibold mb-4'>Cài đặt quiz</h2>
+            <div className='flex items-center gap-2 mb-6'>
+              <Select
                 value={questionCount}
-                onChange={(e) => setQuestionCount(Number(e.target.value))}
-                disabled={questions.length > 0}
-              >
-                <option value='5'>5</option>
-                <option value='10'>10</option>
-                <option value='15'>15</option>
-                <option value='20'>20</option>
-              </select>
+                label='Số câu hỏi'
+                data={[
+                  { value: '5', label: '5' },
+                  { value: '10', label: '10' },
+                  { value: '15', label: '15' },
+                  { value: '20', label: '20' },
+                ]}
+                onChange={(value: string | null) =>
+                  setQuestionCount(value || '5')
+                }
+                className='w-full max-w-xs'
+              />
             </div>
-
-            {questions.length === 0 && (
-              <button
-                onClick={startQuiz}
-                className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
-              >
-                Bắt đầu Quiz
-              </button>
-            )}
+            <button
+              onClick={startQuiz}
+              className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+            >
+              Bắt đầu Quiz
+            </button>
           </div>
+        ) : !quizCompleted ? (
+          <>
+            <QuizQuestion
+              key={questionKey}
+              question={questions[currentQuestionIndex]}
+              onAnswer={handleAnswer}
+              questionNumber={currentQuestionIndex + 1}
+              totalQuestions={questions.length}
+            />
+            <div className='mt-6 text-center'>
+              <button
+                onClick={resetQuiz}
+                className='px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition'
+              >
+                Hủy và làm lại
+              </button>
+            </div>
+          </>
+        ) : (
+          quizResult && (
+            <>
+              <QuizResult result={quizResult} onRetry={startQuiz} />
+              <div className='mt-6 text-center'>
+                <button
+                  onClick={resetQuiz}
+                  className='px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition ml-4'
+                >
+                  Thay đổi cài đặt
+                </button>
+              </div>
+            </>
+          )
         )}
       </div>
     </div>

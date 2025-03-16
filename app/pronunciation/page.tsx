@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { VocabWord } from '../../types';
 import vocabData from '../../data/vocabData';
 import {
@@ -93,6 +93,10 @@ export default function PronunciationPage() {
   const [recognition, setRecognition] =
     useState<SpeechRecognitionInterface | null>(null);
 
+  // Thêm ref cho audio element
+  const correctSoundRef = useRef<HTMLAudioElement | null>(null);
+  const incorrectSoundRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
     // Initialize speech recognition
     if (
@@ -111,8 +115,15 @@ export default function PronunciationPage() {
         const speechResult = event.results[event.resultIndex][0].transcript
           .toLowerCase()
           .trim();
+
+        if (!speechResult) {
+          console.error('⚠️ Không nhận được văn bản từ giọng nói!');
+          return;
+        }
+
         setTranscript(speechResult);
-        checkPronunciation(speechResult);
+        // Use the ref function directly to ensure latest state values
+        checkPronunciationRef.current(speechResult);
         setIsListening(false);
       };
 
@@ -129,11 +140,13 @@ export default function PronunciationPage() {
     }
 
     // Load vocabulary data
-    if (vocabData.length > 0) {
+    if (vocabData && vocabData.length > 0) {
       const shuffled = [...vocabData].sort(() => Math.random() - 0.5);
       setWords(shuffled);
       setCurrentWord(shuffled[0]);
       setIsLoading(false);
+    } else {
+      console.error('vocabData is empty or invalid');
     }
   }, []);
 
@@ -167,8 +180,38 @@ export default function PronunciationPage() {
     }
   };
 
-  const checkPronunciation = (spoken: string) => {
-    if (!currentWord) return;
+  const playCorrectSound = () => {
+    if (correctSoundRef.current) {
+      correctSoundRef.current.currentTime = 0;
+      correctSoundRef.current
+        .play()
+        .then(() => {})
+        .catch((err) => {
+          console.error('Lỗi khi phát âm thanh:', err.message);
+        });
+    } else {
+      console.error('Không tìm thấy audio element');
+    }
+  };
+
+  const playIncorrectSound = () => {
+    if (incorrectSoundRef.current) {
+      incorrectSoundRef.current.currentTime = 0;
+      incorrectSoundRef.current
+        .play()
+        .then(() => {})
+        .catch((err) => {
+          console.error('Lỗi khi phát âm thanh:', err.message);
+        });
+    } else {
+    }
+  };
+
+  // Add a separate useEffect to handle checkPronunciation correctly
+  const checkPronunciationRef = useRef((spoken: string) => {
+    if (!currentWord) {
+      return;
+    }
 
     // Simple check - just see if the word is in the transcript
     // In a real app, you would use a more sophisticated pronunciation evaluation API
@@ -178,17 +221,50 @@ export default function PronunciationPage() {
 
     if (isCorrect) {
       setFeedback('correct');
-      setScore(score + 1);
+      setScore((prev) => prev + 1);
+      // Phát âm thanh khi đúng
+
+      playCorrectSound();
       setTimeout(moveToNextWord, 1500);
     } else {
       setFeedback('incorrect');
-      setAttemptsRemaining(attemptsRemaining - 1);
+      setAttemptsRemaining((prev) => prev - 1);
+      playIncorrectSound();
 
       if (attemptsRemaining <= 1) {
         setTimeout(moveToNextWord, 1500);
       }
     }
-  };
+  });
+
+  // Update the ref whenever related state changes
+  useEffect(() => {
+    checkPronunciationRef.current = (spoken: string) => {
+      if (!currentWord) {
+        return;
+      }
+
+      // Simple check - just see if the word is in the transcript
+      const isCorrect = spoken
+        .toLowerCase()
+        .includes(currentWord.word.toLowerCase());
+
+      if (isCorrect) {
+        setFeedback('correct');
+        setScore((prev) => prev + 1);
+        playCorrectSound();
+        setTimeout(moveToNextWord, 1500);
+      } else {
+        setFeedback('incorrect');
+        setAttemptsRemaining((prev) => prev - 1);
+        playIncorrectSound();
+
+        if (attemptsRemaining <= 1) {
+          setTimeout(moveToNextWord, 1500);
+        }
+      }
+    };
+  }, [currentWord, attemptsRemaining]);
 
   const moveToNextWord = () => {
     const currentIndex = words.findIndex((w) => w.word === currentWord?.word);
@@ -225,6 +301,14 @@ export default function PronunciationPage() {
 
   return (
     <div className='container mx-auto py-8 px-4'>
+      {/* Audio element cho âm thanh đúng */}
+      <audio ref={correctSoundRef} src='/sounds/correct.mp3' preload='auto' />
+      <audio
+        ref={incorrectSoundRef}
+        src='/sounds/incorrect.mp3'
+        preload='auto'
+      />
+
       <div className='max-w-2xl mx-auto'>
         <div className='text-center mb-8'>
           <h1 className='text-3xl font-bold text-gray-800'>Luyện Phát Âm</h1>

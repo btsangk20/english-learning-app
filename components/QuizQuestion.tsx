@@ -1,4 +1,3 @@
-// components/QuizQuestion.tsx
 'use client';
 
 import { useState } from 'react';
