@@ -1,18 +1,21 @@
 'use client';
 
 // app/page.tsx
-import Link from 'next/link';
+
 import {
   FaBook,
-  FaQuestionCircle,
-  FaHeadphones,
-  FaMicrophone,
-  FaKeyboard,
-  FaSearch,
   FaCalendarDay,
-  FaGraduationCap,
   FaChartLine,
+  FaGraduationCap,
+  FaHeadphones,
+  FaKeyboard,
+  FaMicrophone,
+  FaQuestionCircle,
+  FaSearch,
 } from 'react-icons/fa';
+
+import Link from 'next/link';
+
 export default function Home() {
   const features = [
     {
@@ -209,4 +212,3 @@ export default function Home() {
     </main>
   );
 }
-

@@ -78,16 +78,75 @@ export function generateQuizQuestions(
 
 // Lưu trữ trạng thái học tập
 export function saveProgress(words: VocabWord[]): void {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('vocabProgress', JSON.stringify(words));
+  console.log('words', words);
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('vocabProgress', JSON.stringify(words));
+    }
+  } catch (error) {
+    console.error('Error saving progress:', error);
   }
 }
 
 // Lấy trạng thái học tập đã lưu
 export function getProgress(): VocabWord[] | null {
-  if (typeof window !== 'undefined') {
-    const savedProgress = localStorage.getItem('vocabProgress');
-    return savedProgress ? JSON.parse(savedProgress) : null;
+  try {
+    if (typeof window !== 'undefined') {
+      const savedProgress = localStorage.getItem('vocabProgress');
+      return savedProgress ? JSON.parse(savedProgress) : null;
+    }
+  } catch (error) {
+    console.error('Error getting progress:', error);
   }
   return null;
 }
+
+export const saveWordStatus = (word: string, mastered: boolean): void => {
+  try {
+    if (typeof window === 'undefined') return;
+
+    // Lấy danh sách ID từ đã mastered
+    const masteredWordsJson = localStorage.getItem('masteredWords');
+    let masteredWords: string[] = masteredWordsJson
+      ? JSON.parse(masteredWordsJson)
+      : [];
+
+    if (mastered) {
+      // Thêm từ vào danh sách nếu chưa có
+      if (!masteredWords.includes(word)) {
+        masteredWords.push(word);
+      }
+    } else {
+      // Xóa từ khỏi danh sách nếu có
+      masteredWords = masteredWords.filter((w) => w !== word);
+    }
+
+    // Lưu lại danh sách đã cập nhật
+    localStorage.setItem('masteredWords', JSON.stringify(masteredWords));
+  } catch (error) {
+    console.error('Lỗi khi lưu trạng thái từ vựng:', error);
+  }
+};
+
+// Hàm lấy trạng thái đã học của tất cả các từ
+export const getWordStatuses = (): Record<string, boolean> => {
+  try {
+    if (typeof window === 'undefined') return {};
+
+    const masteredWordsJson = localStorage.getItem('masteredWords');
+    const masteredWords: string[] = masteredWordsJson
+      ? JSON.parse(masteredWordsJson)
+      : [];
+
+    // Tạo object với key là từ, value là trạng thái mastered
+    const statuses: Record<string, boolean> = {};
+    for (const word of masteredWords) {
+      statuses[word] = true;
+    }
+
+    return statuses;
+  } catch (error) {
+    console.error('Lỗi khi lấy trạng thái từ vựng:', error);
+    return {};
+  }
+};
