@@ -1,9 +1,10 @@
 // components/Flashcard.tsx
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+
 import { VocabWord } from '../types';
+import { motion } from 'framer-motion';
 
 interface FlashcardProps {
   word: VocabWord;
@@ -13,6 +14,15 @@ interface FlashcardProps {
 export default function Flashcard({ word, onMastered }: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isMastered, setIsMastered] = useState(word.mastered || false);
+
+  const examples =
+    word.examples?.length >= 2 ? word.examples.slice(0, 2) : word.examples;
+
+  // Update isMastered state whenever word changes
+  useEffect(() => {
+    setIsFlipped(false); // Reset flip state when changing words
+    setIsMastered(word.mastered || false);
+  }, [word]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -72,7 +82,7 @@ export default function Flashcard({ word, onMastered }: FlashcardProps) {
 
           <h3 className='text-xl font-semibold text-gray-800 mb-2'>Ví dụ:</h3>
           <ul className='text-sm text-gray-600'>
-            {word.examples.map((example, index) => (
+            {examples.map((example, index) => (
               <li key={index} className='mb-1'>
                 {example}
               </li>

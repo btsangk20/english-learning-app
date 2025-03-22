@@ -3,6 +3,8 @@ export interface VocabWord {
   word: string;
   type: string;
   pronunciation: string;
+  pronunciationUs?: string;
+  wordIndex?: number;
   meaning: string;
   examples: string[];
   mastered?: boolean;

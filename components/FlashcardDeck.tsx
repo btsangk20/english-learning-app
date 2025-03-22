@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { VocabWord } from '../types';
 import Flashcard from './Flashcard';
-import { saveProgress, getProgress } from '../lib/utils';
+import { saveWordStatus, getWordStatuses } from '../lib/utils';
 import { FaArrowLeft, FaArrowRight, FaRandom } from 'react-icons/fa';
 
 interface FlashcardDeckProps {
@@ -18,20 +18,16 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
   const [showUnmasteredOnly, setShowUnmasteredOnly] = useState(false);
 
   useEffect(() => {
-    // Thử lấy dữ liệu đã lưu từ localStorage
-    const savedProgress = getProgress();
+    const statuses = getWordStatuses();
 
-    if (savedProgress) {
-      setWords(savedProgress);
-    } else {
-      setWords(
-        initialWords.map((word) => ({
-          ...word,
-          mastered: false,
-          lastReviewed: new Date(),
-        })),
-      );
-    }
+    // Áp dụng trạng thái vào danh sách từ
+    const wordsWithStatus = initialWords.map((word) => ({
+      ...word,
+      mastered: !!statuses[word.word],
+      lastReviewed: new Date(),
+    }));
+
+    setWords(wordsWithStatus);
   }, [initialWords]);
 
   const filteredWords = words.filter((word) => {
@@ -60,12 +56,15 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
   };
 
   const handleMastered = (word: VocabWord, mastered: boolean) => {
+    // Chỉ lưu trạng thái của từ hiện tại
+    saveWordStatus(word.word, mastered);
+
+    // Cập nhật state
     const updatedWords = words.map((w) =>
       w.word === word.word ? { ...w, mastered, lastReviewed: new Date() } : w,
     );
 
     setWords(updatedWords);
-    saveProgress(updatedWords);
   };
 
   // Xử lý khi không có từ nào sau khi lọc
