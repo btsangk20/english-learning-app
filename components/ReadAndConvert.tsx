@@ -20,7 +20,7 @@ export default function ReadWordsFile() {
         const data: WordData[] = await response.json();
 
         const enrichedData = [];
-        for (const wordObj of data.slice(0, 10)) {
+        for (const wordObj of data) {
           const formattedWord = formatForURL(wordObj.word);
           const formattedType = formatForURL(wordObj.type);
           try {
