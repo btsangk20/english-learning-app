@@ -2,7 +2,7 @@
 'use client';
 
 import { QuizResult as QuizResultType } from '../types';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface QuizResultProps {
   result: QuizResultType;
@@ -10,6 +10,7 @@ interface QuizResultProps {
 }
 
 export default function QuizResult({ result, onRetry }: QuizResultProps) {
+  const router = useRouter();
   const { totalQuestions, correctAnswers, wrongAnswers, timeSpent } = result;
   const score = Math.round((correctAnswers / totalQuestions) * 100);
 
@@ -32,7 +33,9 @@ export default function QuizResult({ result, onRetry }: QuizResultProps) {
 
       <div className='text-center mb-8'>
         <div className='inline-block w-32 h-32 rounded-full border-8 border-blue-500 flex items-center justify-center'>
-          <span className='text-3xl font-bold text-blue-600'>{score}%</span>
+          <span className='text-3xl font-bold text-blue-600 w-full h-full flex items-center justify-center'>
+            {score}%
+          </span>
         </div>
         <p className='mt-2 text-gray-700'>{getMessage()}</p>
       </div>
@@ -62,9 +65,9 @@ export default function QuizResult({ result, onRetry }: QuizResultProps) {
           <div className='bg-red-50 border border-red-100 rounded-lg p-4'>
             <ul className='space-y-2'>
               {wrongAnswers.map((word, index) => (
-                <li key={index} className='flex justify-between'>
-                  <span className='font-medium'>{word.word}</span>
-                  <span className='text-gray-600'>{word.meaning}</span>
+                <li key={index} className='grid grid-cols-[auto,1fr] gap-2'>
+                  <span className='font-semibold  text-black'>{`${word.word}: `}</span>
+                  <span className='text-gray-600 text-sm'>{word.meaning}</span>
                 </li>
               ))}
             </ul>
@@ -75,17 +78,18 @@ export default function QuizResult({ result, onRetry }: QuizResultProps) {
       <div className='flex flex-col sm:flex-row gap-3 justify-center'>
         <button
           onClick={onRetry}
-          className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+          className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer'
         >
           Làm lại Quiz
         </button>
-        <Link
-          href='/flashcards'
-          className='px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-center'
+        <button
+          onClick={() => router.push('/flashcards')}
+          className='px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-center cursor-pointer'
         >
           Quay lại Flashcards
-        </Link>
+        </button>
       </div>
     </div>
   );
 }
+

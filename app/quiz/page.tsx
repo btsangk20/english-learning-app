@@ -1,16 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import QuizQuestion from '../../components/QuizQuestion';
-import QuizResult from '../../components/QuizResult';
-import vocabData from '../../data/vocabData';
-import { generateQuizQuestions } from '../../lib/utils';
-import { Select } from '@mantine/core';
 import {
   QuizQuestion as QuizQuestionType,
-  VocabWord,
   QuizResult as QuizResultType,
+  VocabWord,
 } from '../../types';
+
+import { Layout } from '@/components/Layout';
+import QuizQuestion from '../../components/QuizQuestion';
+import QuizResult from '../../components/QuizResult';
+import { Select } from '@mantine/core';
+import { generateQuizQuestions } from '../../lib/utils';
+import { quizQuestionOptions } from '@/constants/common';
+import { useState } from 'react';
+import vocabData from '../../data/vocabData';
 
 export default function QuizPage() {
   const [questions, setQuestions] = useState<QuizQuestionType[]>([]);
@@ -107,75 +110,64 @@ export default function QuizPage() {
   }
 
   return (
-    <div className='container mx-auto py-8 px-4'>
-      <div className='max-w-4xl mx-auto'>
-        <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold text-gray-800'>Quiz Từ Vựng</h1>
-          <p className='text-gray-600 mt-2'>
-            Kiểm tra kiến thức của bạn và xem những từ nào cần ôn tập thêm.
-          </p>
+    <Layout
+      title='Quiz Từ Vựng'
+      subtitle='Kiểm tra kiến thức của bạn và xem những từ nào cần ôn tập thêm.'
+    >
+      {!quizStarted ? (
+        <div className='bg-white rounded-lg shadow-md p-6 mb-8'>
+          <h2 className='text-xl font-semibold mb-4'>Cài đặt quiz</h2>
+          <div className='flex items-center gap-2 mb-6'>
+            <Select
+              value={questionCount}
+              label='Số câu hỏi'
+              data={quizQuestionOptions}
+              onChange={(value: string | null) =>
+                setQuestionCount(value || '5')
+              }
+              className='w-full max-w-xs'
+            />
+          </div>
+          <button
+            onClick={startQuiz}
+            className='px-6 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+          >
+            Bắt đầu Quiz
+          </button>
         </div>
-
-        {!quizStarted ? (
-          <div className='bg-white rounded-lg shadow-md p-6 mb-8'>
-            <h2 className='text-xl font-semibold mb-4'>Cài đặt quiz</h2>
-            <div className='flex items-center gap-2 mb-6'>
-              <Select
-                value={questionCount}
-                label='Số câu hỏi'
-                data={[
-                  { value: '5', label: '5' },
-                  { value: '10', label: '10' },
-                  { value: '15', label: '15' },
-                  { value: '20', label: '20' },
-                ]}
-                onChange={(value: string | null) =>
-                  setQuestionCount(value || '5')
-                }
-                className='w-full max-w-xs'
-              />
-            </div>
+      ) : !quizCompleted ? (
+        <>
+          <QuizQuestion
+            key={questionKey}
+            question={questions[currentQuestionIndex]}
+            onAnswer={handleAnswer}
+            questionNumber={currentQuestionIndex + 1}
+            totalQuestions={questions.length}
+          />
+          <div className='mt-6 text-center'>
             <button
-              onClick={startQuiz}
-              className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+              onClick={resetQuiz}
+              className='px-6 py-2 cursor-pointer bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition'
             >
-              Bắt đầu Quiz
+              Hủy và làm lại
             </button>
           </div>
-        ) : !quizCompleted ? (
+        </>
+      ) : (
+        quizResult && (
           <>
-            <QuizQuestion
-              key={questionKey}
-              question={questions[currentQuestionIndex]}
-              onAnswer={handleAnswer}
-              questionNumber={currentQuestionIndex + 1}
-              totalQuestions={questions.length}
-            />
+            <QuizResult result={quizResult} onRetry={startQuiz} />
             <div className='mt-6 text-center'>
               <button
                 onClick={resetQuiz}
-                className='px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition'
+                className='px-6 py-2 cursor-pointer bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition ml-4'
               >
-                Hủy và làm lại
+                Thay đổi cài đặt
               </button>
             </div>
           </>
-        ) : (
-          quizResult && (
-            <>
-              <QuizResult result={quizResult} onRetry={startQuiz} />
-              <div className='mt-6 text-center'>
-                <button
-                  onClick={resetQuiz}
-                  className='px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition ml-4'
-                >
-                  Thay đổi cài đặt
-                </button>
-              </div>
-            </>
-          )
-        )}
-      </div>
-    </div>
+        )
+      )}
+    </Layout>
   );
 }

@@ -1,22 +1,24 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import {
-  FaBook,
-  FaQuestionCircle,
-  FaHome,
-  FaHeadphones,
-  FaMicrophone,
-  FaKeyboard,
-  FaSearch,
-  FaCalendarDay,
-  FaGraduationCap,
-  FaChartLine,
   FaBars,
+  FaBook,
+  FaCalendarDay,
+  FaChartLine,
+  FaGraduationCap,
+  FaHeadphones,
+  FaHome,
+  FaKeyboard,
+  FaMicrophone,
+  FaQuestionCircle,
+  FaSearch,
   FaTimes,
 } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface NavItem {
   path: string;
@@ -46,9 +48,9 @@ export default function Navbar() {
     { path: '/listening', label: 'Luyện nghe', icon: <FaHeadphones /> },
     { path: '/pronunciation', label: 'Phát âm', icon: <FaMicrophone /> },
     { path: '/typing', label: 'Gõ từ', icon: <FaKeyboard /> },
+    { path: '/topic', label: 'Ngữ pháp', icon: <FaGraduationCap /> },
     { path: '/dictionary', label: 'Từ điển', icon: <FaSearch /> },
     { path: '/daily-challenge', label: 'Thử thách', icon: <FaCalendarDay /> },
-    { path: '/grammar', label: 'Ngữ pháp', icon: <FaGraduationCap /> },
     { path: '/progress', label: 'Tiến độ', icon: <FaChartLine /> },
   ];
 
@@ -79,7 +81,12 @@ export default function Navbar() {
         {/* Desktop and Mobile Navigation Header */}
         <div className='flex justify-between items-center'>
           <Link href='/' className='text-xl font-bold flex items-center gap-2'>
-            <FaBook className='text-2xl' />
+            <Image
+              src='/images/logo_white.png'
+              alt='EnglishGenius'
+              width={32}
+              height={32}
+            />
             <span className='hidden sm:inline'>EnglishGenius</span>
             <span className='sm:hidden'>EG</span>
           </Link>
@@ -88,7 +95,7 @@ export default function Navbar() {
           <div className='lg:hidden'>
             <button
               onClick={toggleMobileMenu}
-              className='p-2 text-white focus:outline-none hover:bg-blue-700 rounded transition'
+              className='p-2 text-white focus:outline-none hover:bg-blue-700 rounded transition cursor-pointer'
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
@@ -116,8 +123,10 @@ export default function Navbar() {
 
         {/* Tablet and Mobile Navigation Menu */}
         <div
-          className={`lg:hidden mt-4 bg-blue-700 rounded-lg shadow-lg transition-all duration-300 overflow-hidden ${
-            isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          className={`lg:hidden bg-blue-700 rounded-lg shadow-lg transition-all duration-300 overflow-hidden ${
+            isMobileMenuOpen
+              ? 'max-h-[540px] opacity-100 mt-4'
+              : 'max-h-0 opacity-0 mt-0'
           }`}
         >
           <div className='flex flex-col space-y-1 p-2'>

@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
-  FaSearch,
-  FaVolumeUp,
   FaBookmark,
   FaRegBookmark,
+  FaSearch,
   FaSpinner,
+  FaVolumeUp,
 } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+
+import { Layout } from '@/components/Layout';
 
 interface WordDefinition {
   word: string;
@@ -142,199 +144,189 @@ export default function DictionaryPage() {
   };
 
   return (
-    <div className='container mx-auto py-8 px-4'>
-      <div className='max-w-3xl mx-auto'>
-        <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold text-gray-800'>Từ Điển</h1>
-          <p className='text-gray-600 mt-2'>
-            Tra cứu từ vựng, phát âm, nghĩa và ví dụ bằng tiếng Anh.
-          </p>
-        </div>
+    <Layout
+      title='Từ Điển'
+      subtitle='Tra cứu từ vựng, phát âm, nghĩa và ví dụ bằng tiếng Anh.'
+    >
+      <div className='bg-white rounded-xl shadow-lg p-6 mb-8'>
+        <form onSubmit={handleSearch} className='flex mb-6'>
+          <input
+            type='text'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder='Nhập từ tiếng Anh cần tra cứu...'
+            className='flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+          />
+          <button
+            type='submit'
+            className='bg-blue-600 cursor-pointer text-white p-3 rounded-r-lg hover:bg-blue-700 transition flex items-center justify-center'
+            disabled={isLoading}
+          >
+            {isLoading ? <FaSpinner className='animate-spin' /> : <FaSearch />}
+          </button>
+        </form>
 
-        <div className='bg-white rounded-xl shadow-lg p-6 mb-8'>
-          <form onSubmit={handleSearch} className='flex mb-6'>
-            <input
-              type='text'
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder='Nhập từ tiếng Anh cần tra cứu...'
-              className='flex-1 p-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
-            <button
-              type='submit'
-              className='bg-blue-600 text-white p-3 rounded-r-lg hover:bg-blue-700 transition flex items-center justify-center'
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <FaSpinner className='animate-spin' />
-              ) : (
-                <FaSearch />
-              )}
-            </button>
-          </form>
-
-          {recentSearches.length > 0 && (
-            <div className='mb-6'>
-              <h3 className='text-sm font-medium text-gray-500 mb-2'>
-                Tìm kiếm gần đây:
-              </h3>
-              <div className='flex flex-wrap gap-2'>
-                {recentSearches.map((term, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleRecentSearchClick(term)}
-                    className='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition'
-                  >
-                    {term}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {isLoading && (
-            <div className='text-center py-10'>
-              <FaSpinner className='animate-spin text-3xl text-blue-500 mx-auto mb-4' />
-              <p>Đang tìm kiếm...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className='text-center py-6 bg-red-50 text-red-600 rounded-lg'>
-              {error}
-            </div>
-          )}
-
-          {searchResults && searchResults.length > 0 && (
-            <div>
-              {searchResults.map((result, resultIndex) => (
-                <div key={resultIndex} className='mb-8'>
-                  <div className='flex justify-between items-start'>
-                    <div>
-                      <h2 className='text-3xl font-bold text-gray-800 mb-1'>
-                        {result.word}
-                      </h2>
-                      {result.phonetic && (
-                        <p className='text-gray-600'>{result.phonetic}</p>
-                      )}
-                    </div>
-
-                    <div className='flex space-x-2'>
-                      {result.phonetics &&
-                        result.phonetics.find((p) => p.audio) && (
-                          <button
-                            onClick={() =>
-                              playAudio(
-                                result.phonetics.find((p) => p.audio)?.audio ||
-                                  '',
-                              )
-                            }
-                            className='p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition'
-                          >
-                            <FaVolumeUp />
-                          </button>
-                        )}
-
-                      <button
-                        onClick={() => toggleSaveWord(result.word)}
-                        className={`p-2 rounded-full transition ${
-                          savedWords.includes(result.word)
-                            ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {savedWords.includes(result.word) ? (
-                          <FaBookmark />
-                        ) : (
-                          <FaRegBookmark />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className='mt-6'>
-                    {result.meanings.map((meaning, meaningIndex) => (
-                      <div key={meaningIndex} className='mb-6'>
-                        <h3 className='text-lg font-semibold text-gray-700 mb-2 italic'>
-                          {meaning.partOfSpeech}
-                        </h3>
-
-                        <div className='space-y-4'>
-                          {meaning.definitions.map((def, defIndex) => (
-                            <div
-                              key={defIndex}
-                              className='pl-4 border-l-2 border-gray-200'
-                            >
-                              <p className='text-gray-800'>
-                                {defIndex + 1}. {def.definition}
-                              </p>
-
-                              {def.example && (
-                                <p className='text-gray-600 italic mt-1'>
-                                  &quot;{def.example}&quot;
-                                </p>
-                              )}
-
-                              {def.synonyms && def.synonyms.length > 0 && (
-                                <div className='mt-2'>
-                                  <span className='text-sm text-gray-500'>
-                                    Từ đồng nghĩa:{' '}
-                                  </span>
-                                  <span className='text-blue-600'>
-                                    {def.synonyms.slice(0, 5).join(', ')}
-                                    {def.synonyms.length > 5 && '...'}
-                                  </span>
-                                </div>
-                              )}
-
-                              {def.antonyms && def.antonyms.length > 0 && (
-                                <div className='mt-1'>
-                                  <span className='text-sm text-gray-500'>
-                                    Từ trái nghĩa:{' '}
-                                  </span>
-                                  <span className='text-red-600'>
-                                    {def.antonyms.slice(0, 5).join(', ')}
-                                    {def.antonyms.length > 5 && '...'}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {result.sourceUrls && result.sourceUrls.length > 0 && (
-                    <div className='mt-4 text-sm text-gray-500'>
-                      <p>Nguồn: {result.sourceUrls[0]}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {savedWords.length > 0 && (
-          <div className='bg-white rounded-xl shadow-lg p-6'>
-            <h2 className='text-xl font-semibold text-gray-800 mb-4'>
-              Từ đã lưu ({savedWords.length})
-            </h2>
+        {recentSearches.length > 0 && (
+          <div className='mb-6'>
+            <h3 className='text-sm font-medium text-gray-500 mb-2'>
+              Tìm kiếm gần đây:
+            </h3>
             <div className='flex flex-wrap gap-2'>
-              {savedWords.map((word, index) => (
+              {recentSearches.map((term, index) => (
                 <button
                   key={index}
-                  onClick={() => handleRecentSearchClick(word)}
-                  className='px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg flex items-center hover:bg-yellow-100 transition'
+                  onClick={() => handleRecentSearchClick(term)}
+                  className='px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition cursor-pointer'
                 >
-                  <FaBookmark className='mr-2 text-yellow-600' /> {word}
+                  {term}
                 </button>
               ))}
             </div>
           </div>
         )}
+
+        {isLoading && (
+          <div className='text-center py-10'>
+            <FaSpinner className='animate-spin text-3xl text-blue-500 mx-auto mb-4' />
+            <p>Đang tìm kiếm...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className='text-center py-6 bg-red-50 text-red-600 rounded-lg'>
+            {error}
+          </div>
+        )}
+
+        {searchResults && searchResults.length > 0 && (
+          <div>
+            {searchResults.map((result, resultIndex) => (
+              <div key={resultIndex} className='mb-8'>
+                <div className='flex justify-between items-start'>
+                  <div>
+                    <h2 className='text-3xl font-bold text-gray-800 mb-1'>
+                      {result.word}
+                    </h2>
+                    {result.phonetic && (
+                      <p className='text-gray-600'>{result.phonetic}</p>
+                    )}
+                  </div>
+
+                  <div className='flex space-x-2'>
+                    {result.phonetics &&
+                      result.phonetics.find((p) => p.audio) && (
+                        <button
+                          onClick={() =>
+                            playAudio(
+                              result.phonetics.find((p) => p.audio)?.audio ||
+                                '',
+                            )
+                          }
+                          className='p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition cursor-pointer'
+                        >
+                          <FaVolumeUp />
+                        </button>
+                      )}
+
+                    <button
+                      onClick={() => toggleSaveWord(result.word)}
+                      className={`p-2 rounded-full transition cursor-pointer ${
+                        savedWords.includes(result.word)
+                          ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {savedWords.includes(result.word) ? (
+                        <FaBookmark />
+                      ) : (
+                        <FaRegBookmark />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className='mt-6'>
+                  {result.meanings.map((meaning, meaningIndex) => (
+                    <div key={meaningIndex} className='mb-6'>
+                      <h3 className='text-lg font-semibold text-gray-700 mb-2 italic'>
+                        {meaning.partOfSpeech}
+                      </h3>
+
+                      <div className='space-y-4'>
+                        {meaning.definitions.map((def, defIndex) => (
+                          <div
+                            key={defIndex}
+                            className='pl-4 border-l-2 border-gray-200'
+                          >
+                            <p className='text-gray-800'>
+                              {defIndex + 1}. {def.definition}
+                            </p>
+
+                            {def.example && (
+                              <p className='text-gray-600 italic mt-1'>
+                                &quot;{def.example}&quot;
+                              </p>
+                            )}
+
+                            {def.synonyms && def.synonyms.length > 0 && (
+                              <div className='mt-2'>
+                                <span className='text-sm text-gray-500'>
+                                  Từ đồng nghĩa:{' '}
+                                </span>
+                                <span className='text-blue-600'>
+                                  {def.synonyms.slice(0, 5).join(', ')}
+                                  {def.synonyms.length > 5 && '...'}
+                                </span>
+                              </div>
+                            )}
+
+                            {def.antonyms && def.antonyms.length > 0 && (
+                              <div className='mt-1'>
+                                <span className='text-sm text-gray-500'>
+                                  Từ trái nghĩa:{' '}
+                                </span>
+                                <span className='text-red-600'>
+                                  {def.antonyms.slice(0, 5).join(', ')}
+                                  {def.antonyms.length > 5 && '...'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {result.sourceUrls && result.sourceUrls.length > 0 && (
+                  <div className='mt-4 text-sm text-gray-500'>
+                    <p>Nguồn: {result.sourceUrls[0]}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+
+      {savedWords.length > 0 && (
+        <div className='bg-white rounded-xl shadow-lg p-6'>
+          <h2 className='text-xl font-semibold text-gray-800 mb-4'>
+            Từ đã lưu ({savedWords.length})
+          </h2>
+          <div className='flex flex-wrap gap-2'>
+            {savedWords.map((word, index) => (
+              <button
+                key={index}
+                onClick={() => handleRecentSearchClick(word)}
+                className='px-4 py-2 cursor-pointer bg-yellow-50 text-yellow-700 rounded-lg flex items-center hover:bg-yellow-100 transition'
+              >
+                <FaBookmark className='mr-2 text-yellow-600' /> {word}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </Layout>
   );
 }

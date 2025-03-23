@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+
 import { QuizQuestion as QuizQuestionType } from '../types';
 
 interface QuizQuestionProps {
@@ -18,6 +19,8 @@ export default function QuizQuestion({
 }: QuizQuestionProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
+  const correctSoundRef = useRef<HTMLAudioElement>(null);
+  const incorrectSoundRef = useRef<HTMLAudioElement>(null);
 
   const handleSelectAnswer = (answer: string) => {
     if (isAnswered) return;
@@ -26,6 +29,12 @@ export default function QuizQuestion({
     setIsAnswered(true);
 
     const isCorrect = answer === question.correctAnswer;
+
+    if (isCorrect) {
+      correctSoundRef.current?.play();
+    } else {
+      incorrectSoundRef.current?.play();
+    }
 
     // Chờ một chút trước khi thông báo kết quả để người dùng thấy lựa chọn
     setTimeout(() => {
@@ -64,6 +73,12 @@ export default function QuizQuestion({
 
   return (
     <div className='w-full max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg'>
+      <audio ref={correctSoundRef} src='/sounds/correct.mp3' preload='auto' />
+      <audio
+        ref={incorrectSoundRef}
+        src='/sounds/incorrect.mp3'
+        preload='auto'
+      />
       <div className='mb-2 flex justify-between items-center'>
         <span className='text-sm text-gray-500'>
           Câu hỏi {questionNumber}/{totalQuestions}
@@ -83,7 +98,7 @@ export default function QuizQuestion({
             key={index}
             className={`w-full text-left p-4 border-2 rounded-lg transition ${getAnswerClass(
               option,
-            )}`}
+            )} ${isAnswered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             onClick={() => handleSelectAnswer(option)}
             disabled={isAnswered}
           >

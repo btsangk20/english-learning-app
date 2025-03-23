@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { FaCheck, FaHeart, FaTimes, FaVolumeUp } from 'react-icons/fa';
+import { useEffect, useRef, useState } from 'react';
+
+import { Layout } from '@/components/Layout';
 import { VocabWord } from '../../types';
 import vocabData from '../../data/vocabData';
-import { FaVolumeUp, FaCheck, FaTimes, FaHeart } from 'react-icons/fa';
 
 export default function ListeningPage() {
   const [currentWord, setCurrentWord] = useState<VocabWord | null>(null);
@@ -12,9 +14,11 @@ export default function ListeningPage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
+  const [lives, setLives] = useState(5);
   const [gameOver, setGameOver] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const correctSoundRef = useRef<HTMLAudioElement>(null);
+  const incorrectSoundRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (vocabData.length >= 4) {
@@ -62,11 +66,13 @@ export default function ListeningPage() {
 
     if (correct) {
       setScore(score + 1);
+      correctSoundRef.current?.play();
     } else {
       setLives(lives - 1);
       if (lives - 1 <= 0) {
         setGameOver(true);
       }
+      incorrectSoundRef.current?.play();
     }
 
     // Move to next word after a short delay
@@ -123,7 +129,7 @@ export default function ListeningPage() {
           </p>
           <button
             onClick={restartGame}
-            className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+            className='px-6 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition '
           >
             Chơi lại
           </button>
@@ -133,77 +139,79 @@ export default function ListeningPage() {
   }
 
   return (
-    <div className='container mx-auto py-8 px-4'>
-      <div className='max-w-2xl mx-auto'>
-        <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold text-gray-800'>Luyện Nghe</h1>
-          <p className='text-gray-600 mt-2'>
-            Nghe và chọn từ bạn đã nghe. Tập trung vào phát âm và nhận diện từ.
-          </p>
-        </div>
-
-        <div className='bg-white rounded-xl shadow-lg p-8 mb-6'>
-          <div className='flex justify-between items-center mb-6'>
-            <div className='flex items-center'>
-              {[...Array(lives)].map((_, i) => (
-                <FaHeart key={i} className='text-red-500 mr-1' />
-              ))}
-              <span className='ml-2 text-gray-700'>Mạng: {lives}</span>
-            </div>
-            <div className='text-gray-700'>Điểm: {score}</div>
-          </div>
-
-          <div className='text-center mb-8'>
-            <button
-              onClick={speakWord}
-              className='w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto hover:bg-blue-200 transition focus:outline-none'
-            >
-              <FaVolumeUp className='text-3xl' />
-            </button>
-            <p className='mt-3 text-gray-600'>Nhấn vào icon để nghe lại từ</p>
-          </div>
-
-          <div className='grid grid-cols-2 gap-3'>
-            {options.map((option, index) => (
-              <button
-                key={index}
-                className={`p-4 rounded-lg border-2 text-center transition ${
-                  selectedOption === option
-                    ? isCorrect
-                      ? 'bg-green-100 border-green-500'
-                      : 'bg-red-100 border-red-500'
-                    : 'bg-white border-gray-200 hover:border-blue-500'
-                }`}
-                onClick={() => handleOptionSelect(option)}
-                disabled={isCorrect !== null}
-              >
-                {option}
-                {selectedOption === option && isCorrect !== null && (
-                  <span className='ml-2'>
-                    {isCorrect ? (
-                      <FaCheck className='inline text-green-500' />
-                    ) : (
-                      <FaTimes className='inline text-red-500' />
-                    )}
-                  </span>
-                )}
-              </button>
+    <Layout
+      title='Luyện Nghe'
+      subtitle='Nghe và chọn từ bạn đã nghe. Tập trung vào phát âm và nhận diện từ.'
+    >
+      <audio ref={correctSoundRef} src='/sounds/correct.mp3' preload='auto' />
+      <audio
+        ref={incorrectSoundRef}
+        src='/sounds/incorrect.mp3'
+        preload='auto'
+      />
+      <div className='bg-white rounded-xl shadow-lg p-8 mb-6'>
+        <div className='flex justify-between items-center mb-6'>
+          <div className='flex items-center'>
+            {[...Array(lives)].map((_, i) => (
+              <FaHeart key={i} className='text-red-500 mr-1' />
             ))}
+            <span className='ml-2 text-gray-700'>Mạng: {lives}</span>
           </div>
+          <div className='text-gray-700'>Điểm: {score}</div>
         </div>
 
-        <div className='bg-blue-50 p-6 rounded-lg'>
-          <h2 className='text-xl font-semibold text-gray-800 mb-2'>
-            Mẹo luyện nghe tiếng Anh:
-          </h2>
-          <ul className='space-y-2 text-gray-700'>
-            <li>• Tập trung vào việc phân biệt các âm tương tự nhau</li>
-            <li>• Lắng nghe một cách chủ động, đoán trước thông tin</li>
-            <li>• Thường xuyên nghe và lặp lại để quen với âm thanh</li>
-            <li>• Học từ vựng mới thông qua ngữ cảnh nghe</li>
-          </ul>
+        <div className='text-center mb-8'>
+          <button
+            onClick={speakWord}
+            className='w-24 h-24 cursor-pointer bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto hover:bg-blue-200 transition focus:outline-none'
+          >
+            <FaVolumeUp className='text-3xl' />
+          </button>
+          <p className='mt-3 text-gray-600'>Nhấn vào icon để nghe lại từ</p>
+        </div>
+
+        <div className='grid grid-cols-2 gap-3'>
+          {options.map((option, index) => (
+            <button
+              key={index}
+              className={`p-4 rounded-lg border-2 text-center transition ${
+                selectedOption === option
+                  ? isCorrect
+                    ? 'bg-green-100 border-green-500'
+                    : 'bg-red-100 border-red-500'
+                  : 'bg-white border-gray-200 hover:border-blue-500'
+              } ${
+                isCorrect !== null ? 'cursor-not-allowed' : 'cursor-pointer'
+              }`}
+              onClick={() => handleOptionSelect(option)}
+              disabled={isCorrect !== null}
+            >
+              {option}
+              {selectedOption === option && isCorrect !== null && (
+                <span className='ml-2'>
+                  {isCorrect ? (
+                    <FaCheck className='inline text-green-500' />
+                  ) : (
+                    <FaTimes className='inline text-red-500' />
+                  )}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
-    </div>
+
+      <div className='bg-blue-50 p-6 rounded-lg'>
+        <h2 className='text-xl font-semibold text-gray-800 mb-2'>
+          Mẹo luyện nghe tiếng Anh:
+        </h2>
+        <ul className='space-y-2 text-gray-700'>
+          <li>• Tập trung vào việc phân biệt các âm tương tự nhau</li>
+          <li>• Lắng nghe một cách chủ động, đoán trước thông tin</li>
+          <li>• Thường xuyên nghe và lặp lại để quen với âm thanh</li>
+          <li>• Học từ vựng mới thông qua ngữ cảnh nghe</li>
+        </ul>
+      </div>
+    </Layout>
   );
 }
