@@ -1,8 +1,10 @@
 // components/Flashcard.tsx
 'use client';
 
+import { FaCheck, FaQuestion } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 
+import { Button } from '@mantine/core';
 import { VocabWord } from '../types';
 import { motion } from 'framer-motion';
 
@@ -34,6 +36,24 @@ export default function Flashcard({ word, onMastered }: FlashcardProps) {
     onMastered(word, newMasteredStatus);
   };
 
+  const renderButton = (isMastered: boolean) => {
+    return (
+      <div className='absolute top-4 right-4'>
+        <Button
+          variant='outline'
+          color={isMastered ? 'green' : 'black'}
+          size='xs'
+          onClick={(e) => {
+            e.stopPropagation();
+            handleMastered();
+          }}
+        >
+          {isMastered ? <FaCheck /> : <FaQuestion />}
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className='perspective-1000 w-full max-w-sm mx-auto h-64 cursor-pointer'>
       <motion.div
@@ -54,21 +74,7 @@ export default function Flashcard({ word, onMastered }: FlashcardProps) {
           <p className='text-gray-600 mt-2'>{word.type}</p>
           <p className='text-gray-500 mt-1'>{word.pronunciation}</p>
 
-          <div className='absolute bottom-4 right-4'>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMastered();
-              }}
-              className={`p-2 rounded-full transition-colors ${
-                isMastered
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              {isMastered ? '✓' : '?'}
-            </button>
-          </div>
+          {renderButton(isMastered)}
         </div>
 
         {/* Back of card */}
@@ -89,21 +95,7 @@ export default function Flashcard({ word, onMastered }: FlashcardProps) {
             ))}
           </ul>
 
-          <div className='absolute bottom-4 right-4'>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMastered();
-              }}
-              className={`p-2 rounded-full transition-colors ${
-                isMastered
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              {isMastered ? '✓' : '?'}
-            </button>
-          </div>
+          {renderButton(isMastered)}
         </div>
       </motion.div>
     </div>

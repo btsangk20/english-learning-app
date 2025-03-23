@@ -1,11 +1,12 @@
 // components/FlashcardDeck.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
-import { VocabWord } from '../types';
-import Flashcard from './Flashcard';
-import { saveWordStatus, getWordStatuses } from '../lib/utils';
 import { FaArrowLeft, FaArrowRight, FaRandom } from 'react-icons/fa';
+import { getWordStatuses, saveWordStatus } from '../lib/utils';
+import { useEffect, useState } from 'react';
+
+import Flashcard from './Flashcard';
+import { VocabWord } from '../types';
 
 interface FlashcardDeckProps {
   initialWords: VocabWord[];
@@ -79,7 +80,7 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
             : 'Không có từ vựng nào.'}
         </p>
         <button
-          className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+          className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer'
           onClick={() => {
             setShowMasteredOnly(false);
             setShowUnmasteredOnly(false);
@@ -95,7 +96,7 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
     <div className='w-full max-w-2xl mx-auto p-4'>
       <div className='mb-6 flex flex-wrap gap-2 justify-center'>
         <button
-          className={`px-4 py-2 rounded transition ${
+          className={`px-4 py-2 rounded transition cursor-pointer ${
             !showMasteredOnly && !showUnmasteredOnly
               ? 'bg-blue-600 text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -109,7 +110,7 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
         </button>
 
         <button
-          className={`px-4 py-2 rounded transition ${
+          className={`px-4 py-2 rounded transition cursor-pointer ${
             showMasteredOnly
               ? 'bg-green-600 text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -124,7 +125,7 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
         </button>
 
         <button
-          className={`px-4 py-2 rounded transition ${
+          className={`px-4 py-2 rounded transition cursor-pointer ${
             showUnmasteredOnly
               ? 'bg-yellow-600 text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -139,7 +140,7 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
         </button>
 
         <button
-          className='px-4 py-2 bg-purple-600 text-white rounded flex items-center gap-1 hover:bg-purple-700 transition'
+          className='px-4 py-2 cursor-pointer bg-purple-600 text-white rounded flex items-center gap-1 hover:bg-purple-700 transition'
           onClick={handleShuffle}
         >
           <FaRandom /> Trộn bài
@@ -154,9 +155,9 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
           />
         )}
 
-        <div className='flex justify-between mt-6'>
+        <div className='flex justify-between items-center mt-6'>
           <button
-            className='px-6 py-2 bg-gray-200 text-gray-700 rounded-full flex items-center gap-1 hover:bg-gray-300 transition'
+            className='px-6 py-2 cursor-pointer  bg-gray-200 text-gray-700 rounded-full flex items-center gap-1 hover:bg-gray-300 transition'
             onClick={handlePrevious}
           >
             <FaArrowLeft /> Trước
@@ -169,7 +170,7 @@ export default function FlashcardDeck({ initialWords }: FlashcardDeckProps) {
           </div>
 
           <button
-            className='px-6 py-2 bg-gray-200 text-gray-700 rounded-full flex items-center gap-1 hover:bg-gray-300 transition'
+            className='px-6 py-2 cursor-pointer bg-gray-200 text-gray-700 rounded-full flex items-center gap-1 hover:bg-gray-300 transition'
             onClick={handleNext}
           >
             Sau <FaArrowRight />

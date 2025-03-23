@@ -114,3 +114,4 @@ function downloadJSON(data: WordData[]) {
   a.click();
   document.body.removeChild(a);
 }
+

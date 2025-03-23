@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { VocabWord } from '../../types';
-import vocabData from '../../data/vocabData';
 import {
   FaCalendarAlt,
   FaCheckCircle,
   FaTimesCircle,
-  FaVolumeUp,
   FaTrophy,
   FaUndo,
+  FaVolumeUp,
 } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+
+import { Layout } from '@/components/Layout';
+import { VocabWord } from '../../types';
+import vocabData from '../../data/vocabData';
 
 // Define different challenge types
 type ChallengeType =
@@ -248,7 +250,7 @@ export default function DailyChallengeComponent() {
               </h3>
               <button
                 onClick={() => speakWord(challenge.word.word)}
-                className='p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition'
+                className='p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition cursor-pointer'
               >
                 <FaVolumeUp />
               </button>
@@ -268,13 +270,17 @@ export default function DailyChallengeComponent() {
               )}
             </div>
 
-            <div className='grid grid-cols-1 gap-3'>
+            <div className='grid grid-cols-1 gap-3 items-center'>
               {challenge.options?.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleAnswer(option)}
                   disabled={isCorrect !== null}
-                  className={`p-3 border-2 rounded-lg text-left transition ${
+                  className={`p-3 flex items-center justify-between border-2 rounded-lg text-left transition 
+                  ${
+                    isCorrect !== null ? 'cursor-not-allowed' : 'cursor-pointer'
+                  }
+                  ${
                     userAnswer === option
                       ? isCorrect
                         ? 'bg-green-100 border-green-500'
@@ -335,7 +341,13 @@ export default function DailyChallengeComponent() {
               <button
                 onClick={() => handleAnswer(userAnswer)}
                 disabled={!userAnswer || isCorrect !== null}
-                className='p-3 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition disabled:bg-gray-400'
+                className={`p-3 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition 
+                  ${
+                    !userAnswer || isCorrect !== null
+                      ? 'cursor-not-allowed'
+                      : 'cursor-pointer'
+                  }
+                  disabled:bg-gray-400`}
               >
                 Kiểm tra
               </button>
@@ -404,7 +416,11 @@ export default function DailyChallengeComponent() {
               <button
                 onClick={() => handleAnswer(userAnswer)}
                 disabled={!userAnswer || isCorrect !== null}
-                className='p-3 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition disabled:bg-gray-400'
+                className={`p-3 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition disabled:bg-gray-400 ${
+                  !userAnswer || isCorrect !== null
+                    ? 'cursor-not-allowed'
+                    : 'cursor-pointer'
+                }`}
               >
                 Kiểm tra
               </button>
@@ -453,97 +469,89 @@ export default function DailyChallengeComponent() {
   }
 
   return (
-    <div className='container mx-auto py-8 px-4'>
-      <div className='max-w-2xl mx-auto'>
-        <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold text-gray-800'>
-            Thử Thách Hàng Ngày
-          </h1>
-          <p className='text-gray-600 mt-2'>
-            Hoàn thành các bài tập hàng ngày để duy trì thói quen học tập.
-          </p>
+    <Layout
+      title='Thử Thách Hàng Ngày'
+      subtitle='Hoàn thành các bài tập hàng ngày để duy trì thói quen học tập.'
+    >
+      <div className='bg-white rounded-xl shadow-lg p-6 mb-6'>
+        <div className='flex justify-between items-center mb-6'>
+          <div className='flex items-center'>
+            <FaCalendarAlt className='text-blue-600 mr-2' />
+            <span className='text-gray-700'>
+              {new Date().toLocaleDateString('vi-VN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+          </div>
+          <div className='flex items-center bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full'>
+            <FaTrophy className='text-yellow-500 mr-2' />
+            <span>Chuỗi ngày: {streakDays}</span>
+          </div>
         </div>
 
-        <div className='bg-white rounded-xl shadow-lg p-6 mb-6'>
-          <div className='flex justify-between items-center mb-6'>
-            <div className='flex items-center'>
-              <FaCalendarAlt className='text-blue-600 mr-2' />
-              <span className='text-gray-700'>
-                {new Date().toLocaleDateString('vi-VN', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </span>
+        {isComplete ? (
+          <div className='text-center py-8'>
+            <div className='w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+              <FaCheckCircle className='text-green-600 text-4xl' />
             </div>
-            <div className='flex items-center bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full'>
-              <FaTrophy className='text-yellow-500 mr-2' />
-              <span>Chuỗi ngày: {streakDays}</span>
+
+            <h2 className='text-2xl font-bold text-gray-800 mb-2'>
+              Thử thách hoàn thành!
+            </h2>
+
+            <p className='text-gray-600 mb-6'>
+              Bạn đã hoàn thành thử thách ngày hôm nay với số điểm: {score}/
+              {challenges.length}
+            </p>
+
+            <div className='flex justify-center'>
+              <button
+                onClick={resetChallenge}
+                className='px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition flex items-center cursor-pointer'
+              >
+                <FaUndo className='mr-2' /> Luyện tập lại
+              </button>
             </div>
           </div>
-
-          {isComplete ? (
-            <div className='text-center py-8'>
-              <div className='w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                <FaCheckCircle className='text-green-600 text-4xl' />
+        ) : (
+          <>
+            <div className='flex justify-between items-center mb-4'>
+              <div className='text-gray-600'>
+                Thử thách {currentChallengeIndex + 1}/{challenges.length}
               </div>
-
-              <h2 className='text-2xl font-bold text-gray-800 mb-2'>
-                Thử thách hoàn thành!
-              </h2>
-
-              <p className='text-gray-600 mb-6'>
-                Bạn đã hoàn thành thử thách ngày hôm nay với số điểm: {score}/
-                {challenges.length}
-              </p>
-
-              <div className='flex justify-center'>
-                <button
-                  onClick={resetChallenge}
-                  className='px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition flex items-center'
-                >
-                  <FaUndo className='mr-2' /> Luyện tập lại
-                </button>
-              </div>
+              <div className='text-gray-600'>Điểm: {score}</div>
             </div>
-          ) : (
-            <>
-              <div className='flex justify-between items-center mb-4'>
-                <div className='text-gray-600'>
-                  Thử thách {currentChallengeIndex + 1}/{challenges.length}
-                </div>
-                <div className='text-gray-600'>Điểm: {score}</div>
-              </div>
 
-              {renderChallenge()}
+            {renderChallenge()}
 
-              <div className='w-full bg-gray-200 h-2 rounded-full overflow-hidden'>
-                <div
-                  className='bg-blue-600 h-full'
-                  style={{
-                    width: `${
-                      ((currentChallengeIndex + 1) / challenges.length) * 100
-                    }%`,
-                  }}
-                ></div>
-              </div>
-            </>
-          )}
-        </div>
-
-        <div className='bg-blue-50 p-6 rounded-lg'>
-          <h2 className='text-xl font-semibold text-gray-800 mb-2'>
-            Lợi ích của việc luyện tập mỗi ngày:
-          </h2>
-          <ul className='space-y-2 text-gray-700'>
-            <li>• Xây dựng thói quen học tập đều đặn</li>
-            <li>• Nâng cao hiệu quả ghi nhớ dài hạn</li>
-            <li>• Củng cố kiến thức từ vựng đã học</li>
-            <li>• Tạo động lực học tập thông qua chuỗi ngày liên tiếp</li>
-          </ul>
-        </div>
+            <div className='w-full bg-gray-200 h-2 rounded-full overflow-hidden'>
+              <div
+                className='bg-blue-600 h-full'
+                style={{
+                  width: `${
+                    ((currentChallengeIndex + 1) / challenges.length) * 100
+                  }%`,
+                }}
+              ></div>
+            </div>
+          </>
+        )}
       </div>
-    </div>
+
+      <div className='bg-blue-50 p-6 rounded-lg'>
+        <h2 className='text-xl font-semibold text-gray-800 mb-2'>
+          Lợi ích của việc luyện tập mỗi ngày:
+        </h2>
+        <ul className='space-y-2 text-gray-700'>
+          <li>• Xây dựng thói quen học tập đều đặn</li>
+          <li>• Nâng cao hiệu quả ghi nhớ dài hạn</li>
+          <li>• Củng cố kiến thức từ vựng đã học</li>
+          <li>• Tạo động lực học tập thông qua chuỗi ngày liên tiếp</li>
+        </ul>
+      </div>
+    </Layout>
   );
 }
