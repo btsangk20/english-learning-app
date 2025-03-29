@@ -19,7 +19,7 @@ import Link from 'next/link';
 export default function Home() {
   const features = [
     {
-      title: 'Flashcards',
+      title: 'Thẻ ghi nhớ',
       description:
         'Học từ vựng bằng phương pháp thẻ ghi nhớ hai mặt. Lật thẻ, xem nghĩa và ví dụ, đánh dấu từ đã thuộc.',
       icon: <FaBook className='text-blue-600 text-2xl' />,
@@ -29,7 +29,7 @@ export default function Home() {
       buttonColor: 'bg-blue-600 hover:bg-blue-700',
     },
     {
-      title: 'Quiz',
+      title: 'Trắc nghiệm',
       description:
         'Kiểm tra kiến thức của bạn với các câu hỏi đa dạng. Xem kết quả và ôn tập những từ chưa thuộc.',
       icon: <FaQuestionCircle className='text-green-600 text-2xl' />,
@@ -39,7 +39,7 @@ export default function Home() {
       buttonColor: 'bg-green-600 hover:bg-green-700',
     },
     {
-      title: 'Luyện Nghe',
+      title: 'Luyện nghe',
       description:
         'Cải thiện kỹ năng nghe tiếng Anh thông qua các bài tập nhận biết và phân biệt từ vựng.',
       icon: <FaHeadphones className='text-purple-600 text-2xl' />,
@@ -49,7 +49,7 @@ export default function Home() {
       buttonColor: 'bg-purple-600 hover:bg-purple-700',
     },
     {
-      title: 'Phát Âm',
+      title: 'Phát âm',
       description:
         'Phát âm từ vựng tiếng Anh và nhận phản hồi ngay lập tức, giúp bạn cải thiện phát âm.',
       icon: <FaMicrophone className='text-red-600 text-2xl' />,
@@ -59,7 +59,16 @@ export default function Home() {
       buttonColor: 'bg-red-600 hover:bg-red-700',
     },
     {
-      title: 'Gõ Từ',
+      title: 'Bảng phiên âm',
+      description: 'Luyện tập phát âm IPA để cải thiện phát âm tiếng Anh.',
+      icon: <FaMicrophone className='text-pink-600 text-2xl' />,
+      link: '/ipa-practice',
+      bgColor: 'bg-pink-100',
+      textColor: 'text-pink-600',
+      buttonColor: 'bg-pink-600 hover:bg-pink-700',
+    },
+    {
+      title: 'Gõ từ vựng',
       description:
         'Luyện gõ từ vựng tiếng Anh để củng cố trí nhớ và cải thiện kỹ năng đánh máy.',
       icon: <FaKeyboard className='text-yellow-600 text-2xl' />,
@@ -69,7 +78,7 @@ export default function Home() {
       buttonColor: 'bg-yellow-600 hover:bg-yellow-700',
     },
     {
-      title: 'Từ Điển',
+      title: 'Từ điển',
       description:
         'Tra cứu nhanh chóng nghĩa, phát âm, và ví dụ của từ vựng tiếng Anh.',
       icon: <FaSearch className='text-indigo-600 text-2xl' />,
@@ -79,7 +88,7 @@ export default function Home() {
       buttonColor: 'bg-indigo-600 hover:bg-indigo-700',
     },
     {
-      title: 'Thử Thách Hàng Ngày',
+      title: 'Thử thách hàng ngày',
       description:
         'Rèn luyện thói quen học tập đều đặn với các bài tập mới mỗi ngày.',
       icon: <FaCalendarDay className='text-orange-600 text-2xl' />,
@@ -89,7 +98,7 @@ export default function Home() {
       buttonColor: 'bg-orange-600 hover:bg-orange-700',
     },
     {
-      title: 'Ngữ Pháp',
+      title: 'Ngữ pháp',
       description:
         'Học và luyện tập các quy tắc ngữ pháp tiếng Anh qua bài tập tương tác.',
       icon: <FaGraduationCap className='text-teal-600 text-2xl' />,
@@ -99,7 +108,7 @@ export default function Home() {
       buttonColor: 'bg-teal-600 hover:bg-teal-700',
     },
     {
-      title: 'Tiến Độ',
+      title: 'Tiến độ',
       description:
         'Theo dõi quá trình học tập của bạn với biểu đồ và thống kê cá nhân.',
       icon: <FaChartLine className='text-gray-600 text-2xl' />,
@@ -212,4 +221,3 @@ export default function Home() {
     </main>
   );
 }
-
