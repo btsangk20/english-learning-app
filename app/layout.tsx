@@ -7,7 +7,7 @@ import { Loader, MantineProvider, createTheme } from '@mantine/core';
 
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
-import Navbar from '../components/Navbar';
+import Navbar from '@/components/Navbar';
 import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -53,7 +53,7 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-gray-50`}>
         <MantineProvider theme={theme}>
           <Navbar />
-          <main className='min-h-[calc(100vh-64px)]'>
+          <main className='min-h-[calc(100vh-145.8px)]'>
             <Suspense
               fallback={
                 <div className='flex justify-center items-center h-full'>

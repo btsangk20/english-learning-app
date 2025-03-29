@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 
 import { Layout } from '@/components/Layout';
 import Link from 'next/link';
+import vocabData from '@/data/vocabData';
 
 interface ProgressData {
   vocabularyLearned: number;
@@ -72,6 +73,39 @@ export default function ProgressPage() {
       quizHistory = JSON.parse(quizHistoryData);
     }
 
+    // get grammar data
+    let listeningProgress = 0;
+    const listeningProgressData = localStorage.getItem('listeningProgress');
+    if (listeningProgressData) {
+      listeningProgress = JSON.parse(listeningProgressData);
+    }
+
+    let pronunciationProgress = 0;
+    const pronunciationProgressData = localStorage.getItem(
+      'pronunciationProgress',
+    );
+    if (pronunciationProgressData) {
+      pronunciationProgress = JSON.parse(pronunciationProgressData);
+    }
+
+    let typingProgress = 0;
+    const typingProgressData = localStorage.getItem('typingProgress');
+    if (typingProgressData) {
+      typingProgress = JSON.parse(typingProgressData);
+    }
+
+    let ipaProgress = 0;
+    const ipaProgressData = localStorage.getItem('ipaProgress');
+    if (ipaProgressData) {
+      ipaProgress = JSON.parse(ipaProgressData);
+    }
+
+    let grammarProgress = 0;
+    const grammarProgressData = localStorage.getItem('grammarProgress');
+    if (grammarProgressData) {
+      grammarProgress = JSON.parse(grammarProgressData);
+    }
+
     // Get daily streak
     let streak = 0;
     const dailyChallengeStreak = localStorage.getItem('dailyChallengeStreak');
@@ -87,8 +121,7 @@ export default function ProgressPage() {
     const progress: ProgressData = {
       vocabularyLearned: masteredWords.length,
       totalVocabulary: 1000, // Simulated total vocabulary goal
-      quizScores:
-        quizHistory.length > 0 ? quizHistory : generateSampleQuizData(),
+      quizScores: quizHistory,
       masteredWords,
       dailyStreak: streak,
       lastActive:
@@ -98,32 +131,37 @@ export default function ProgressPage() {
         flashcards: {
           name: 'Flashcards',
           completed: masteredWords.length,
-          total: 500,
+          total: vocabData.length,
         },
         quiz: {
           name: 'Quiz',
-          completed: quizHistory.length > 0 ? quizHistory.length * 5 : 25, // Assuming 5 questions per quiz
-          total: 100,
+          completed: quizHistory.length,
+          total: vocabData.length,
         },
         listening: {
           name: 'Luyện Nghe',
-          completed: 18,
-          total: 50,
+          completed: listeningProgress,
+          total: vocabData.length,
         },
         pronunciation: {
           name: 'Phát Âm',
-          completed: 12,
-          total: 50,
+          completed: pronunciationProgress,
+          total: vocabData.length,
+        },
+        ipa: {
+          name: 'IPA',
+          completed: ipaProgress,
+          total: 48,
         },
         typing: {
           name: 'Gõ Từ',
-          completed: 30,
-          total: 100,
+          completed: typingProgress,
+          total: vocabData.length,
         },
         grammar: {
           name: 'Ngữ Pháp',
-          completed: 5,
-          total: 20,
+          completed: grammarProgress,
+          total: 28,
         },
         dailyChallenge: {
           name: 'Thử Thách Hàng Ngày',
@@ -136,28 +174,28 @@ export default function ProgressPage() {
     setProgressData(progress);
   };
 
-  const generateSampleQuizData = () => {
-    const data = [];
-    const now = new Date();
+  // const generateSampleQuizData = () => {
+  //   const data = [];
+  //   const now = new Date();
 
-    for (let i = 20; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(now.getDate() - i);
+  //   for (let i = 20; i >= 0; i--) {
+  //     const date = new Date();
+  //     date.setDate(now.getDate() - i);
 
-      if (i % 3 === 0) {
-        // Skip some days to make it realistic
-        continue;
-      }
+  //     if (i % 3 === 0) {
+  //       // Skip some days to make it realistic
+  //       continue;
+  //     }
 
-      data.push({
-        date: date.toISOString().split('T')[0],
-        score: Math.floor(Math.random() * 3) + 3, // Score between 3-5
-        total: 5,
-      });
-    }
+  //     data.push({
+  //       date: date.toISOString().split('T')[0],
+  //       score: Math.floor(Math.random() * 3) + 3, // Score between 3-5
+  //       total: 5,
+  //     });
+  //   }
 
-    return data;
-  };
+  //   return data;
+  // };
 
   const getFilteredQuizData = () => {
     if (!progressData) return [];
@@ -243,7 +281,9 @@ export default function ProgressPage() {
                   <h3 className='text-lg font-semibold text-gray-800'>
                     Từ vựng đã học
                   </h3>
-                  <p className='text-gray-600 text-sm'>Mục tiêu 1000 từ</p>
+                  <p className='text-gray-600 text-sm'>
+                    Mục tiêu {vocabData.length} từ
+                  </p>
                 </div>
               </div>
               <div>
@@ -350,7 +390,9 @@ export default function ProgressPage() {
 
               <div className='p-4 bg-green-50 rounded-lg'>
                 <p className='text-sm text-gray-600 mb-1'>Phiên học gần nhất</p>
-                <p className='text-2xl font-bold'>18 phút</p>
+                <p className='text-2xl font-bold'>
+                  {progressData.studyTime} phút
+                </p>
               </div>
 
               <div className='p-4 bg-blue-50 rounded-lg'>

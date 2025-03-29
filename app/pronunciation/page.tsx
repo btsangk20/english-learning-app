@@ -90,7 +90,7 @@ export default function PronunciationPage() {
     null,
   );
   const [score, setScore] = useState(0);
-  const [attemptsRemaining, setAttemptsRemaining] = useState(2);
+  // const [attemptsRemaining, setAttemptsRemaining] = useState(2);
   const [isLoading, setIsLoading] = useState(true);
   const [recognition, setRecognition] =
     useState<SpeechRecognitionInterface | null>(null);
@@ -230,12 +230,12 @@ export default function PronunciationPage() {
       setTimeout(moveToNextWord, 1500);
     } else {
       setFeedback('incorrect');
-      setAttemptsRemaining((prev) => prev - 1);
+      // setAttemptsRemaining((prev) => prev - 1);
       playIncorrectSound();
 
-      if (attemptsRemaining <= 1) {
-        setTimeout(moveToNextWord, 1500);
-      }
+      // if (attemptsRemaining <= 1) {
+      //   setTimeout(moveToNextWord, 1500);
+      // }
     }
   });
 
@@ -258,15 +258,15 @@ export default function PronunciationPage() {
         setTimeout(moveToNextWord, 1500);
       } else {
         setFeedback('incorrect');
-        setAttemptsRemaining((prev) => prev - 1);
+        // setAttemptsRemaining((prev) => prev - 1);
         playIncorrectSound();
 
-        if (attemptsRemaining <= 1) {
-          setTimeout(moveToNextWord, 1500);
-        }
+        // if (attemptsRemaining <= 1) {
+        //   setTimeout(moveToNextWord, 1500);
+        // }
       }
     };
-  }, [currentWord, attemptsRemaining]);
+  }, [currentWord]);
 
   const moveToNextWord = () => {
     const currentIndex = words.findIndex((w) => w.word === currentWord?.word);
@@ -275,7 +275,7 @@ export default function PronunciationPage() {
       setCurrentWord(words[currentIndex + 1]);
       setTranscript('');
       setFeedback(null);
-      setAttemptsRemaining(2);
+      // setAttemptsRemaining(2);
     } else {
       // End of words - could implement completion screen here
       alert('Bạn đã hoàn thành tất cả các từ! Điểm của bạn: ' + score);
@@ -285,7 +285,7 @@ export default function PronunciationPage() {
       setCurrentWord(shuffled[0]);
       setTranscript('');
       setFeedback(null);
-      setAttemptsRemaining(2);
+      // setAttemptsRemaining(2);
       setScore(0);
     }
   };
@@ -318,9 +318,9 @@ export default function PronunciationPage() {
         <div className='bg-white rounded-xl shadow-lg p-8 mb-6'>
           <div className='flex justify-between items-center mb-6'>
             <div className='text-gray-700'>Số từ đã đúng: {score}</div>
-            <div className='text-gray-700'>
+            {/* <div className='text-gray-700'>
               Lượt thử còn lại: {attemptsRemaining}
-            </div>
+            </div> */}
           </div>
 
           <div className='text-center mb-8'>

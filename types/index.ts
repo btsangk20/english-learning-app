@@ -30,3 +30,13 @@ export interface QuizScore {
   score: number;
   total: number;
 }
+
+export interface NavItem {
+  path: string;
+  label: string;
+  icon: React.ReactNode;
+  links?: Array<{
+    link: string;
+    label: string;
+  }>;
+}

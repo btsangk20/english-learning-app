@@ -1,6 +1,6 @@
 'use client';
 
-import { FaCheck, FaHeart, FaTimes, FaVolumeUp } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaVolumeUp } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
 
 import { Layout } from '@/components/Layout';
@@ -14,7 +14,7 @@ export default function ListeningPage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(5);
+  // const [lives, setLives] = useState(5);
   const [gameOver, setGameOver] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const correctSoundRef = useRef<HTMLAudioElement>(null);
@@ -68,16 +68,16 @@ export default function ListeningPage() {
       setScore(score + 1);
       correctSoundRef.current?.play();
     } else {
-      setLives(lives - 1);
-      if (lives - 1 <= 0) {
-        setGameOver(true);
-      }
+      // setLives(lives - 1);
+      // if (lives - 1 <= 0) {
+      //   setGameOver(true);
+      // }
       incorrectSoundRef.current?.play();
     }
 
     // Move to next word after a short delay
     setTimeout(() => {
-      if (lives - 1 <= 0 && !correct) return; // Game over
+      // if (lives - 1 <= 0 && !correct) return; // Game over
 
       const currentIndex = words.findIndex((w) => w.word === currentWord.word);
       if (currentIndex < words.length - 1) {
@@ -102,7 +102,7 @@ export default function ListeningPage() {
     setSelectedOption(null);
     setIsCorrect(null);
     setScore(0);
-    setLives(3);
+    // setLives(5);
     setGameOver(false);
   };
 
@@ -152,10 +152,10 @@ export default function ListeningPage() {
       <div className='bg-white rounded-xl shadow-lg p-8 mb-6'>
         <div className='flex justify-between items-center mb-6'>
           <div className='flex items-center'>
-            {[...Array(lives)].map((_, i) => (
+            {/* {[...Array(lives)].map((_, i) => (
               <FaHeart key={i} className='text-red-500 mr-1' />
-            ))}
-            <span className='ml-2 text-gray-700'>Mạng: {lives}</span>
+            ))} */}
+            {/* <span className='ml-2 text-gray-700'>Mạng: {lives}</span> */}
           </div>
           <div className='text-gray-700'>Điểm: {score}</div>
         </div>
