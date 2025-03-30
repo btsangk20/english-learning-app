@@ -5,12 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { FaArrowLeft } from 'react-icons/fa';
 import { GrammarExercise } from '@/components/GrammarExercise';
+import { GrammarTheory } from '@/components/GrammarTheory';
 import { Layout } from '@/components/Layout';
 import adjectives from '@/data/adjectives';
 import adverbs from '@/data/adverbs';
 import articles from '@/data/articles';
 import conditionals from '@/data/conditionals';
 import conjunctions from '@/data/conjunctions';
+import grammarTheory from '@/data/grammarTheory';
 import modals from '@/data/modals';
 import nouns from '@/data/nouns';
 import passiveVoice from '@/data/passiveVoice';
@@ -125,6 +127,10 @@ export default function GrammarPage() {
               ? 'Quay lại danh sách thì'
               : 'Quay lại trang chủ đề'}
           </button>
+
+          {topic && grammarTheory[topic] && (
+            <GrammarTheory {...grammarTheory[topic]} />
+          )}
 
           <GrammarExercise exercise={selectedExercise} />
         </div>
